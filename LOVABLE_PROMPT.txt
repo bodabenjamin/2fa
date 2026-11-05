@@ -1,0 +1,60 @@
+Import this existing customer-facing TOTP web application into my Lovable workspace.
+Use the attached source as the source of truth. Preserve its light, clean, centered
+layout, blue-purple buttons, language selector and responsive mobile behavior.
+Keep the neutral brand "2FA Auth" until I choose the final name and .hu domain.
+
+First make a faithful working port. This is a code-generator tool, not a user sign-up
+or login product. It requires no backend, database, API keys or real account data.
+Do not implement a fake or random six-digit number generator.
+
+Required behavior:
+1. Preserve the provided RFC 6238 TOTP implementation, Base32 and otpauth://totp parsing.
+   SHA1/6 digits/30 seconds by default, with the supported URI overrides.
+2. Preserve all 59 translations and their complete key sets, country-first detection
+   from geo.js, manual language switching, and the existing RTL locales. Make exactly
+   one bounded request to https://api.country.is/ directly from the visitor's browser.
+   This country request exposes the connection IP to the provider, but contains no
+   secret, code, current page URL, credentials or request body. Keep no-referrer.
+   A valid country result takes priority over initial browser/link language. Manual
+   selection must win over delayed country results and later language-only links.
+   Preserve link/browser language if lookup fails or times out; never block TOTP.
+   If using your own backend route instead, use trusted client-country metadata:
+   geolocating the backend's outbound IP would select the server's country.
+3. Show the setup key as readable text by default, with the optional eye toggle.
+   Preserve the localized orderHint note below the generator: customers must paste
+   the 2FA setup key delivered with their order into the input above.
+   Also preserve the visual Base32 example, variable key-length guidance, and live
+   character counter (excluding spaces/separators/padding and counting the secret
+   inside an otpauth URI rather than the URL). Never enforce a fixed 32-character key.
+   Show localized inline warnings for too-short and too-long keys using TotpCore.limits
+   (16 and 1024 normalized Base32 characters). Invalid input must not generate a code.
+   The customer-facing warning asks them to copy the complete 2FA key from their
+   order again and says whether the entered value is too short or too long.
+   The generic invalid-input message must also ask them to copy the complete key
+   from their order again, without showing Base32/otpauth implementation terms.
+   Keep supported 16/32/52/103-character keys and other valid lengths working.
+4. Update the live code and countdown, and copy exactly once when the user clicks
+   either the number or the Copy button. Report clipboard failures accurately.
+   Preserve the numeric countdown ring, amber warning at 10 seconds and red at 5
+   seconds for normal 30-second codes, translated expiry status, reset on new codes
+   and reduced-motion preferences. Keep expired codes hidden and uncopyable.
+5. Preserve #key=...&lang=... links and the existing fragment aliases. Process these
+   only in browser memory and remove the key from the address bar after import.
+   Never move the secret into a query string, route path, SSR payload or server API.
+6. Preserve clear/reset, invalid-input feedback, input-edit invalidation and protection
+   against stale asynchronous calculations and expired-code display.
+7. Never store, transmit or log customer secrets: no database, localStorage, cookies,
+   analytics, session replay or error-reporting payloads containing keys or codes.
+   Keep the existing notice when copying a link that deliberately includes a secret.
+8. Use browser crypto and clipboard APIs only in client-side lifecycle and user events.
+   If migrating to SSR, the server must never access or generate the customer's code.
+9. Preserve the local icon and self-hosted assets. Adapt CSP only as required for the
+   chosen runtime and explain any changes that affect the local-only guarantees.
+
+Run the supplied npm test checks. If the framework port changes the controller,
+retain equivalent tests for its behavior rather than claiming the old DOM-fixture
+test proves the new controller. Also test the actual preview on desktop and mobile,
+including a public RFC test key. Do not use real customer credentials for testing.
+
+Return a working project preview for review. A .hu custom domain and customer VPN
+tutorial pages will be configured in a later step after the existing tool works.

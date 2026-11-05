@@ -1,0 +1,12 @@
+{
+  "name": "customer-auth-web",
+  "version": "1.2.3",
+  "private": true,
+  "description": "Buildless browser-local TOTP tool with 59 locales. Import this source into Lovable.",
+  "scripts": {
+    "test": "node test.cjs && node test-session.cjs && node test-links-locales.cjs && node test-geo.cjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
